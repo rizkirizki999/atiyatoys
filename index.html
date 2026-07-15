@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atiya Toys - Toko Mainan Edukasi & Ceria Anak</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, h4, h5, h6, .font-poppins { font-family: 'Poppins', sans-serif; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    .loader { border: 4px solid #f3f3f3; border-top: 4px solid #F97316; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up { animation: fadeInUp 0.3s ease-out forwards; }
+    
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-scale-up { animation: scaleUp 0.2s ease-out forwards; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo, useEffect } = React;
+
+    if (typeof google === 'undefined') {
+      const defaultToys = [
+        {
+          id: "toy-1",
+          name: "Boneka Teddy Bear Jumbo Premium 1 Meter",
+          price: 185000,
+          description: "Boneka Teddy Bear berukuran besar (1 meter) dengan bahan bulu rasfur yang sangat halus dan tebal. Isi boneka menggunakan serat silikon berkualitas premium yang empuk, tidak gampang kempes, dan 100% aman untuk anak-anak.\n\nCocok untuk kado ulang tahun atau koleksi pribadi buah hati.",
+          promo: true,
+          image: "https://images.unsplash.com/photo-1559251606-c623743a6d76?w=500&auto=format&fit=crop",
+          images: [
+            "https://images.unsplash.com/photo-1559251606-c623743a6d76?w=500&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop"
+          ]
+        },
+        {
+          id: "toy-2",
+          name: "Mobil Remote Control RC Rock Crawler 4WD Offroad",
+          price: 245000,
+          description: "Mainan mobil remote control model offroad skala 1:16 dengan penggerak roda penuh (4WD). Mampu melintasi berbagai rintangan ekstrem seperti bebatuan, pasir, tanah, dan tanjakan terjal.\n\nSpesifikasi:\n- Bahan bodi: Logam paduan (Alloy) yang kokoh dan tahan banting\n- Baterai mobil: 4.8V dapat diisi ulang (sudah termasuk USB charger)\n- Frekuensi remote: 2.4GHz (bebas bentrok sinyal jika dimainkan bersamaan)",
+          promo: false,
+          image: "https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=500&auto=format&fit=crop",
+          images: ["https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=500&auto=format&fit=crop"]
+        },
+        {
+          id: "toy-3",
+          name: "Lego Creative Building Bricks 1000 Pcs",
+          price: 159000,
+          description: "Set mainan balok susun kreatif berisi 1000 pcs blok berwarna cerah. Melatih imajinasi, kemampuan spasial, pemecahan masalah, dan motorik halus anak sejak dini.\n\nSudah dilengkapi buku panduan perakitan berbagai model menarik serta kontainer wadah rapi.",
+          promo: true,
+          image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=500&auto=format&fit=crop",
+          images: ["https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=500&auto=format&fit=crop"]
+        },
+        {
+          id: "toy-4",
+          name: "Wooden Block Geometric Puzzle - Mainan Edukatif Kayu",
+          price: 75000,
+          description: "Puzzle balok geometri terbuat dari kayu alami ramah lingkungan. Menggunakan pewarna berbahan dasar air (water-based paint) non-toxic yang aman bagi balita.\n\nSangat baik untuk mengasah pemahaman bentuk, warna, dan koordinasi mata-tangan anak.",
+          promo: false,
+          image: "https://images.unsplash.com/photo-1515488042361-404e9250afef?w=500&auto=format&fit=crop",
+          images: ["https://images.unsplash.com/photo-1515488042361-404e9250afef?w=500&auto=format&fit=crop"]
+        },
+        {
+          id: "toy-5",
+          name: "Robot Action Figure Optimus Prime Transformers",
+          price: 125000,
+          description: "Robot aksi Optimus Prime legendaris yang bisa bertransformasi dari bentuk ksatria baja pelindung bumi menjadi mobil truk semi-trailer kontainer gagah dalam beberapa langkah rakit.\n\nMelatih ketangkasan berpikir dan melatih motorik halus anak melalui permainan peran petualangan seru.",
+          promo: false,
+          image: "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=500&auto=format&fit=crop",
+          images: ["https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=500&auto=format&fit=crop"]
+        },
+        {
+          id: "toy-6",
+          name: "Wooden Kitchenette Set - Mainan Masak-masakan Kayu Premium",
+          price: 320000,
+          description: "Set mainan miniatur dapur dari kayu pinus halus berkualitas tinggi. Dilengkapi kompor tiruan, penggorengan, panci mini, wastafel tiruan, serta tombol-tombol putar berbunyi klik interaktif.\n\nMerupakan mainan ideal untuk mendorong permainan peran interaktif, bersosialisasi, dan mengasah bakat kuliner anak.",
+          promo: true,
+          image: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&auto=format&fit=crop",
+          images: ["https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&auto=format&fit=crop"]
+        }
+      ];
+
+      if (!localStorage.getItem('atiya_toys_products')) {
+        localStorage.setItem('atiya_toys_products', JSON.stringify(defaultToys));
+      }
+
+      // Merekayasa API google.script.run agar berjalan lancar di Github Pages / standalone local
+      window.google = {
+        script: {
+          run: {
+            successHandler: null,
+            failureHandler: null,
+            withSuccessHandler: function(handler) {
+              this.successHandler = handler;
+              return this;
+            },
+            withFailureHandler: function(handler) {
+              this.failureHandler = handler;
+              return this;
+            },
+            getProducts: function() {
+              setTimeout(() => {
+                const data = JSON.parse(localStorage.getItem('atiya_toys_products') || '[]');
+                if (this.successHandler) this.successHandler(data);
+              }, 400);
+            },
+            saveProduct: function(product) {
+              setTimeout(() => {
+                const data = JSON.parse(localStorage.getItem('atiya_toys_products') || '[]');
+                const formattedImages = (product.images || []).filter(img => img && img.trim() !== '');
+                const newProduct = {
+                  ...product,
+                  image: formattedImages[0] || "https://placehold.co/400x400/FFEDD5/F97316?text=Atiya+Toys",
+                  fallbackImage: "https://placehold.co/400x400/FFEDD5/F97316?text=Atiya+Toys"
+                };
+                data.push(newProduct);
+                localStorage.setItem('atiya_toys_products', JSON.stringify(data));
+                if (this.successHandler) this.successHandler(data);
+              }, 400);
+            },
+            updateProduct: function(product) {
+              setTimeout(() => {
+                let data = JSON.parse(localStorage.getItem('atiya_toys_products') || '[]');
+                const formattedImages = (product.images || []).filter(img => img && img.trim() !== '');
+                data = data.map(item => item.id === product.id ? {
+                  ...product,
+                  image: formattedImages[0] || item.image || "https://placehold.co/400x400/FFEDD5/F97316?text=Atiya+Toys"
+                } : item);
+                localStorage.setItem('atiya_toys_products', JSON.stringify(data));
+                if (this.successHandler) this.successHandler(data);
+              }, 400);
+            },
+            deleteProduct: function(id) {
+              setTimeout(() => {
+                let data = JSON.parse(localStorage.getItem('atiya_toys_products') || '[]');
+                data = data.filter(item => item.id !== id);
+                localStorage.setItem('atiya_toys_products', JSON.stringify(data));
+                if (this.successHandler) this.successHandler(data);
+              }, 400);
+            }
+          }
+        }
+      };
+    }
+
+    const Search = () => <span>🔍</span>;
+    const ShoppingCart = () => <span>🛒</span>;
+    const Home = () => <span>🏠</span>;
+    const MessageCircle = () => <span>💬</span>;
+    const User = () => <span>👤</span>;
+    const Trash2 = () => <span>🗑️</span>;
+    const X = () => <span>❌</span>;
+    const Edit2 = () => <span>✏️</span>;
+    const Lock = () => <span>🔒</span>;
+    const ArrowLeft = () => <span>⬅️</span>;
+
+    const config = {
+      nomorWA: "6285157488328",
+      slogan: "Dunia Mainan Edukatif, Interaktif, dan Ceria untuk Buah Hati Tercinta."
+    };
+
+    // ==========================================
+    // KOMPONEN HALAMAN DETAIL PRODUK (SHOPEE STYLE)
+    // ==========================================
+    const ProductDetailView = ({ product, setView, addToCart, openCart }) => {
+      if (!product) return null;
+      const validImages = (product.images || []).filter(img => img && img.trim() !== '');
+      const [mainImg, setMainImg] = useState(validImages[0] || product.image || product.fallbackImage || "https://placehold.co/400x400/FFEDD5/F97316?text=Atiya+Toys");
+      const [qty, setQty] = useState(1);
+
+      const handleBack = () => {
+        if (window.history.state && window.history.state.page === 'detail') {
+          window.history.back();
+        } else {
+          setView('store');
+        }
+      };
+
+      return (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <button onClick={handleBack} className="text-gray-500 hover:text-orange-500 transition-colors font-medium mb-6 flex items-center gap-2">
+            <ArrowLeft /> Kembali ke Katalog
+          </button>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8 flex flex-col md:flex-row gap-8">
+            {/* KOLOM KIRI: Gambar Produk */}
+            <div className="md:w-5/12 flex-shrink-0">
+              <div className="aspect-square border border-gray-100 rounded-2xl overflow-hidden mb-4 p-2 bg-gray-50 flex items-center justify-center">
+                <img src={mainImg} className="w-full h-full object-contain rounded-xl" alt={product.name} onError={(e) => { e.target.src = "https://placehold.co/400x400/FFEDD5/F97316?text=Atiya+Toys"; }} />
+              </div>
+              {validImages.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                  {validImages.map((img, i) => (
+                    <img 
+                      key={i} 
+                      src={img} 
+                      onClick={() => setMainImg(img)} 
+                      className={`w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl cursor-pointer border-2 flex-shrink-0 transition-all ${mainImg === img ? 'border-orange-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`} 
+                      onError={(e) => { e.target.src = "https://placehold.co/100x100/FFEDD5/F97316?text=Toys"; }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* KOLOM KANAN: Informasi & Aksi */}
+            <div className="md:w-7/12 flex flex-col">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 font-poppins leading-snug">{product.name}</h1>
+              
+              <div className="bg-orange-50/50 p-4 sm:p-6 rounded-2xl mb-6 border border-orange-100/50">
+                <p className="text-orange-500 font-bold text-3xl font-poppins">Rp {product.price.toLocaleString('id-ID')}</p>
+              </div>
+
+              {/* Pengaturan Kuantitas */}
+              <div className="flex items-center gap-4 mb-8">
+                <span className="text-gray-500 font-medium w-24">Kuantitas</span>
+                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                  <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 font-bold border-r border-gray-300 transition-colors text-gray-600">-</button>
+                  <input type="number" value={qty} readOnly className="w-14 py-1.5 text-center outline-none bg-white font-medium text-gray-800" />
+                  <button onClick={() => setQty(qty + 1)} className="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 font-bold border-l border-gray-300 transition-colors text-gray-600">+</button>
+                </div>
+              </div>
+
+              {/* Tombol Aksi */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-10">
+                <button onClick={() => { addToCart(product, qty); }} className="flex-1 bg-orange-50 border border-orange-500 text-orange-500 font-bold py-3.5 px-4 rounded-xl hover:bg-orange-100/70 transition-colors flex justify-center items-center gap-2 shadow-sm">
+                  <ShoppingCart /> Masukkan Keranjang
+                </button>
+                <button onClick={() => { addToCart(product, qty, false); openCart(); }} className="flex-1 bg-orange-500 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-orange-600 transition-colors shadow-sm flex justify-center items-center">
+                  Beli Sekarang
+                </button>
+              </div>
+
+              {/* Spesifikasi / Deskripsi */}
+              <div className="border-t border-gray-200 pt-6 mt-auto">
+                <h3 className="font-bold text-lg mb-4 font-poppins text-gray-800">Spesifikasi Produk</h3>
+                <div className="text-gray-600 whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
+                  {product.description || "Tidak ada deskripsi untuk produk ini."}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ==========================================
+    // MODAL KERANJANG & CHECKOUT
+    // ==========================================
+    const CartModal = ({ cart, onClose, updateQty, removeFromCart, clearCart, showToast }) => {
+      const [formData, setFormData] = useState({ nama: '', telp: '', alamat: '' });
+      if (!cart) return null;
+
+      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        let pesan = `Halo Atiya Toys 👋\n\nSaya ingin memesan mainan berikut:\n\n`;
+        cart.forEach((item, index) => {
+          pesan += `${index + 1}. *${item.name}*\n   (${item.qty}x) = Rp ${(item.price * item.qty).toLocaleString('id-ID')}\n`;
+        });
+        pesan += `\n💰 *Total Belanja:* Rp ${total.toLocaleString('id-ID')}\n\n`;
+        pesan += `*📋 Data Pengiriman:*\n👤 Nama: ${formData.nama}\n📞 No. HP: ${formData.telp}\n📍 Alamat Lengkap: ${formData.alamat}\n\nApakah pesanan saya bisa diproses? Terima kasih.`;
+        
+        window.open(`https://wa.me/${config.nomorWA}?text=${encodeURIComponent(pesan)}`, "_blank");
+        clearCart();
+        onClose();
+        showToast("Membuka WhatsApp untuk memproses pesanan...", "success");
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-[70] flex items-end sm:items-center justify-center sm:p-4">
+          <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md p-6 relative max-h-[90vh] flex flex-col animate-fade-in-up">
+            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X/></button>
+            <h2 className="text-xl font-bold mb-4 font-poppins text-gray-800 border-b pb-2 flex items-center gap-2">
+              <span className="text-xl">🛒</span> Keranjang Belanja
+            </h2>
+            
+            <div className="overflow-y-auto flex-1 mb-4 pr-1">
+              {cart.length === 0 ? (
+                <div className="text-center py-12 text-gray-400 flex flex-col items-center gap-3">
+                  <span className="text-4xl">🧸</span>
+                  <p className="font-medium">Keranjang masih kosong.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {cart.map(item => (
+                    <div key={item.id} className="flex gap-3 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                      <img src={item.image} className="w-16 h-16 rounded-lg object-cover bg-white" onError={(e) => { e.target.src = "https://placehold.co/100x100/FFEDD5/F97316?text=Toys"; }} />
+                      <div className="flex-1 flex flex-col justify-between">
+                        <h4 className="text-sm font-medium text-gray-800 line-clamp-2 leading-tight">{item.name}</h4>
+                        <div className="flex items-center justify-between mt-1">
+                          <p className="text-orange-500 font-bold text-sm">Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
+                          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md px-2 py-0.5">
+                            <button onClick={() => updateQty(item.id, -1)} className="text-gray-500 font-bold px-1 hover:text-orange-500">-</button>
+                            <span className="text-xs font-bold w-4 text-center text-gray-700">{item.qty}</span>
+                            <button onClick={() => updateQty(item.id, 1)} className="text-gray-500 font-bold px-1 hover:text-orange-500">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-600 p-1 self-start"><Trash2/></button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {cart.length > 0 && (
+              <form onSubmit={handleSubmit} className="border-t pt-4 mt-auto">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="font-bold text-gray-700">Total:</span>
+                  <span className="font-bold text-orange-500 text-xl font-poppins">Rp {total.toLocaleString('id-ID')}</span>
+                </div>
+                <div className="space-y-3 mb-4">
+                  <input required type="text" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full border border-gray-300 rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-orange-500 text-sm" placeholder="Nama Lengkap" />
+                  <input required type="tel" value={formData.telp} onChange={(e) => setFormData({...formData, telp: e.target.value})} className="w-full border border-gray-300 rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-orange-500 text-sm" placeholder="No. Telepon / WA" />
+                  <textarea required value={formData.alamat} onChange={(e) => setFormData({...formData, alamat: e.target.value})} rows="2" className="w-full border border-gray-300 rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-orange-500 text-sm" placeholder="Alamat Lengkap (Jl, RT/RW, Kec, Kota)"></textarea>
+                </div>
+                <button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3.5 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors shadow-md">
+                  <MessageCircle /> Checkout via WA
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // ==========================================
+    // KOMPONEN HEADER & NAVIGATION
+    // ==========================================
+    const Header = ({ searchQuery, setSearchQuery, cartCount, onOpenCart, view, setView }) => (
+      <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
+        <div className="bg-orange-500 text-white text-xs text-center py-2 font-medium px-4 truncate">{config.slogan}</div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => { setSearchQuery(''); setView('store'); }}>
+              <div className="w-10 h-10 rounded-2xl bg-orange-100 text-orange-500 flex items-center justify-center mr-2 shadow-sm font-bold text-2xl">🧸</div>
+              <span className="text-orange-500 font-bold text-2xl tracking-tight hidden sm:block font-poppins">Atiya Toys</span>
+            </div>
+            <div className="flex-1 max-w-2xl relative">
+              <input 
+                type="text" 
+                placeholder="Cari mainan seru di sini..." 
+                value={searchQuery} 
+                onChange={(e) => { 
+                  setSearchQuery(e.target.value); 
+                  if(view === 'detail') setView('store');
+                }} 
+                className="w-full border-2 border-orange-200 rounded-full py-2.5 px-5 pr-12 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 text-sm transition-all shadow-sm" 
+              />
+              <button className="absolute right-4 top-3.5 text-orange-400 hover:text-orange-600 transition-colors"><Search /></button>
+            </div>
+            <div className="flex items-center gap-4">
+              <button onClick={onOpenCart} className="relative text-gray-600 hover:text-orange-500 p-2 transition-colors">
+                <span className="text-2xl"><ShoppingCart /></span>
+                {cartCount > 0 && <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-white animate-pulse">{cartCount}</span>}
+              </button>
+              <button onClick={() => setView('admin')} className="hidden md:flex items-center gap-1 bg-gray-100 hover:bg-orange-100 hover:text-orange-500 transition-all font-semibold py-2 px-4 rounded-xl text-xs text-gray-600">
+                <span className="text-sm"><User /></span> Admin
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+
+    const MobileBottomNav = ({ setView, view }) => (
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-[0_-2px_10px_rgba(0,0,0,0.03)] z-50 px-8 py-2">
+        <div className="flex justify-around items-center text-xs">
+          <button onClick={() => setView('store')} className={`flex flex-col items-center gap-1 p-1 transition-all ${view === 'store' || view === 'detail' ? 'text-orange-500 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
+            <span className="text-xl"><Home /></span> <span>Beranda</span>
+          </button>
+          <button onClick={() => setView('admin')} className={`flex flex-col items-center gap-1 p-1 transition-all ${view === 'admin' ? 'text-orange-500 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
+            <span className="text-xl"><User /></span> <span>Admin</span>
+          </button>
+        </div>
+      </div>
+    );
+
+    // ==========================================
+    // TOAST NOTIFICATION (PENGGANTI ALERT)
+    // ==========================================
+    const Toast = ({ message, type, onClose }) => {
+      if (!message) return null;
+      const isSuccess = type === 'success';
+      return (
+        <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] flex items-center gap-3 py-3 px-5 rounded-2xl shadow-lg transition-all duration-300 border animate-fade-in-up ${isSuccess ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'}`}>
+          <span className="text-lg">{isSuccess ? '✨' : '⚠️'}</span>
+          <span className="font-semibold text-xs sm:text-sm">{message}</span>
+          <button onClick={onClose} className="hover:opacity-70 text-xs font-bold pl-2">✕</button>
+        </div>
+      );
+    };
+
+    // ==========================================
+    // CONFIRM MODAL (PENGGANTI CONFIRM BROWSER)
+    // ==========================================
+    const ConfirmModal = ({ isOpen, message, onConfirm, onCancel }) => {
+      if (!isOpen) return null;
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[90] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 animate-scale-up">
+            <h3 className="font-bold text-lg text-gray-800 mb-2">Konfirmasi Tindakan</h3>
+            <p className="text-gray-500 text-sm mb-6 leading-relaxed">{message}</p>
+            <div className="flex gap-3 justify-end">
+              <button onClick={onCancel} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors">Batal</button>
+              <button onClick={onConfirm} className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-sm shadow-red-100">Ya, Hapus</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ==========================================
+    // KOMPONEN ADMIN PANEL
+    // ==========================================
+    const AdminPanel = ({ products, setProducts, setView, isLoadingAction, setIsLoadingAction, showToast }) => {
+      const [isLoggedIn, setIsLoggedIn] = useState(false);
+      const [pin, setPin] = useState('');
+      const [formData, setFormData] = useState({ id: null, name: '', price: '', description: '', promo: false, images: ['', '', '', '', ''] });
+      const [isEditing, setIsEditing] = useState(false);
+      
+      // State konfirmasi hapus khusus kustom
+      const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, productId: null });
+
+      if (!isLoggedIn) {
+        return (
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-sm w-full relative">
+              <button onClick={() => setView('store')} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X /></button>
+              <div className="flex justify-center mb-4 text-orange-500 text-5xl">🧸</div>
+              <h2 className="text-2xl font-bold text-center mb-2 text-gray-800 font-poppins">Admin Atiya Toys</h2>
+              <p className="text-xs text-center text-gray-400 mb-6">Gunakan PIN "235689" untuk demo akses</p>
+              <form onSubmit={(e) => { e.preventDefault(); pin === '235689' ? (setIsLoggedIn(true), showToast("Selamat datang Admin!", "success")) : showToast("PIN yang Anda masukkan salah!", "error"); }} className="space-y-4">
+                <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="Masukkan PIN" className="w-full border border-gray-200 p-3 text-center text-xl tracking-widest outline-none rounded-xl focus:ring-1 focus:ring-orange-500 focus:border-orange-500" autoFocus />
+                <button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-medium shadow-md shadow-orange-100 transition-colors">Masuk</button>
+              </form>
+            </div>
+          </div>
+        );
+      }
+
+      const triggerDelete = (id) => {
+        setDeleteConfirm({ isOpen: true, productId: id });
+      };
+
+      const handleConfirmDelete = () => {
+        const id = deleteConfirm.productId;
+        setDeleteConfirm({ isOpen: false, productId: null });
+        setIsLoadingAction(true);
+        google.script.run.withSuccessHandler((newData) => { 
+          setProducts(newData); 
+          setIsLoadingAction(false); 
+          showToast("Mainan berhasil dihapus dari database!", "success");
+        }).deleteProduct(id);
+      };
+
+      const handleEdit = (product) => {
+        setFormData({ ...product, images: product.images ? [...product.images, '', '', '', ''].slice(0, 5) : [product.image || '', '', '', '', ''] });
+        setIsEditing(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const handleImageChange = async (index, e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+          const compressedBase64 = await compressImage(file);
+          const newImages = [...formData.images];
+          newImages[index] = compressedBase64;
+          setFormData({...formData, images: newImages});
+          showToast(`Gambar ${index + 1} berhasil diunggah dan dikompres!`, "success");
+        } catch (error) { 
+          showToast("Gagal memproses gambar.", "error"); 
+        }
+      };
+
+      const handleAddOrUpdate = (e) => {
+        e.preventDefault();
+        if(!formData.name || !formData.price || !formData.images[0]) { 
+          showToast("Nama, Harga, dan Gambar Utama wajib diisi!", "error"); 
+          return; 
+        }
+        
+        setIsLoadingAction(true);
+        const payload = { ...formData, price: parseInt(formData.price) };
+        
+        if (isEditing) {
+          google.script.run.withSuccessHandler((newData) => {
+            setProducts(newData); 
+            setIsLoadingAction(false); 
+            showToast("Mainan berhasil diperbarui!", "success");
+          }).withFailureHandler((err) => { 
+            setIsLoadingAction(false); 
+            showToast("Gagal menyimpan perubahan.", "error"); 
+          }).updateProduct(payload);
+        } else {
+          payload.id = Date.now().toString();
+          google.script.run.withSuccessHandler((newData) => {
+            setProducts(newData); 
+            setIsLoadingAction(false); 
+            showToast("Mainan baru berhasil ditambahkan!", "success");
+          }).withFailureHandler((err) => { 
+            setIsLoadingAction(false); 
+            showToast("Gagal menambahkan produk baru.", "error"); 
+          }).saveProduct(payload);
+        }
+        setFormData({ id: null, name: '', price: '', description: '', promo: false, images: ['', '', '', '', ''] });
+        setIsEditing(false);
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+          <ConfirmModal 
+            isOpen={deleteConfirm.isOpen} 
+            message="Apakah Anda benar-benar yakin ingin menghapus produk ini secara permanen dari basis data?" 
+            onConfirm={handleConfirmDelete} 
+            onCancel={() => setDeleteConfirm({ isOpen: false, productId: null })} 
+          />
+
+          <div className="max-w-5xl mx-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 font-poppins flex items-center gap-2">🛠️ Ruang Kerja Admin</h2>
+              <button onClick={() => setView('store')} className="text-gray-500 hover:text-orange-500 font-medium flex items-center gap-1 transition-colors"><X /> Ke Toko</button>
+            </div>
+            {isLoadingAction && <div className="bg-orange-50 border border-orange-200 text-orange-600 p-4 rounded-xl mb-6 text-center font-bold animate-pulse">Menghubungkan & menyinkronkan data...</div>}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Form Input Tambah/Edit */}
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 className="font-bold text-lg mb-4 text-gray-800 border-b pb-2 flex items-center gap-1">
+                  <span>{isEditing ? '✏️ Edit Mainan' : '➕ Tambah Mainan'}</span>
+                </h3>
+                <form onSubmit={handleAddOrUpdate} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1">Nama Mainan*</label>
+                    <input required type="text" placeholder="Contoh: Boneka Teddy Bear" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full border border-gray-200 p-2.5 text-sm outline-none rounded-xl focus:ring-1 focus:ring-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1">Harga (Rp)*</label>
+                    <input required type="number" placeholder="Contoh: 150000" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full border border-gray-200 p-2.5 text-sm outline-none rounded-xl focus:ring-1 focus:ring-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1">Deskripsi Detail</label>
+                    <textarea placeholder="Tuliskan spesifikasi, keunggulan, ukuran mainan..." rows="3" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full border border-gray-200 p-2.5 text-sm outline-none rounded-xl focus:ring-1 focus:ring-orange-500"></textarea>
+                  </div>
+                  
+                  <div className="space-y-3 bg-gray-50 p-3.5 rounded-xl border border-gray-200">
+                    <label className="block text-xs font-bold text-gray-600">Unggah Foto Mainan (Maks 5 Foto)</label>
+                    {[0, 1, 2, 3, 4].map((index) => (
+                      <div key={index} className="flex items-center gap-2 bg-white p-2 border border-gray-100 rounded-lg">
+                        <div className="w-10 h-10 bg-gray-50 border border-gray-200 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {formData.images[index] ? <img src={formData.images[index]} className="w-full h-full object-cover" /> : <span className="text-xs text-gray-400 font-bold">{index+1}</span>}
+                        </div>
+                        <input type="file" accept="image/*" onChange={(e) => handleImageChange(index, e)} className="w-full text-xs cursor-pointer file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-500 hover:file:bg-orange-100" />
+                        {formData.images[index] && <button type="button" onClick={() => { const newImg = [...formData.images]; newImg[index] = ''; setFormData({...formData, images: newImg}); }} className="text-red-500 p-1 hover:bg-red-50 rounded"><X/></button>}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-2 py-1">
+                    <input type="checkbox" id="promo" checked={formData.promo} onChange={e => setFormData({...formData, promo: e.target.checked})} className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500" />
+                    <label htmlFor="promo" className="text-sm font-semibold text-gray-700">Tandai sebagai Produk PROMO</label>
+                  </div>
+                  <button type="submit" disabled={isLoadingAction} className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold disabled:opacity-50 transition-colors shadow-sm">{isEditing ? 'Simpan Perubahan' : 'Terbitkan Mainan'}</button>
+                  {isEditing && <button type="button" onClick={() => {setFormData({ id: null, name: '', price: '', description: '', promo: false, images: ['', '', '', '', ''] }); setIsEditing(false);}} className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2.5 rounded-xl font-medium mt-2 transition-colors">Batal Edit</button>}
+                </form>
+              </div>
+
+              {/* Daftar Database Produk */}
+              <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                <h3 className="font-bold text-lg mb-4 text-gray-800 border-b pb-2 flex items-center gap-2">📦 Katalog Database ({products.length})</h3>
+                <div className="overflow-x-auto rounded-xl border border-gray-100">
+                  <table className="min-w-full text-left text-sm whitespace-nowrap">
+                    <thead className="bg-gray-50 text-gray-500 font-bold border-b border-gray-100">
+                      <tr><th className="p-4">Produk Mainan</th><th className="p-4">Harga</th><th className="p-4 text-center">Tindakan</th></tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {products.map(product => (
+                        <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
+                          <td className="p-4 flex items-center gap-3">
+                            <img src={product.image || product.fallbackImage} className="w-12 h-12 rounded-lg object-cover bg-gray-50" onError={(e) => { e.target.src = "https://placehold.co/100x100/FFEDD5/F97316?text=Toys"; }} />
+                            <div className="truncate max-w-[180px]">
+                              <p className="font-semibold text-gray-800 truncate">{product.name}</p>
+                              {product.promo && <span className="bg-orange-100 text-orange-600 text-[9px] font-bold px-1.5 py-0.5 rounded">PROMO</span>}
+                            </div>
+                          </td>
+                          <td className="p-4 font-semibold text-gray-700">Rp {product.price.toLocaleString('id-ID')}</td>
+                          <td className="p-4 text-center">
+                            <div className="flex gap-2 justify-center">
+                              <button onClick={() => handleEdit(product)} disabled={isLoadingAction} className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors"><Edit2/></button>
+                              <button onClick={() => triggerDelete(product.id)} disabled={isLoadingAction} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"><Trash2/></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {products.length === 0 && (
+                        <tr><td colSpan="3" className="text-center py-8 text-gray-400 font-medium">Belum ada koleksi mainan. Silakan tambahkan!</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ==========================================
+    // APLIKASI UTAMA (APP)
+    // ==========================================
+    function App() {
+      const [view, setView] = useState('store'); 
+      const [searchQuery, setSearchQuery] = useState('');
+      
+      const [products, setProducts] = useState([]);
+      const [isInitialLoading, setIsInitialLoading] = useState(true);
+      const [isLoadingAction, setIsLoadingAction] = useState(false);
+
+      // State Keranjang & Detail
+      const [cart, setCart] = useState([]);
+      const [isCartOpen, setIsCartOpen] = useState(false);
+      const [detailProduct, setDetailProduct] = useState(null);
+
+      // State Toast Pemberitahuan
+      const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+      const showToast = (message, type = 'success') => {
+        setToast({ show: true, message, type });
+      };
+
+      const closeToast = () => {
+        setToast({ show: false, message: '', type: 'success' });
+      };
+
+      // Hilangkan toast setelah durasi tertentu secara otomatis
+      useEffect(() => {
+        if (toast.show) {
+          const timer = setTimeout(() => {
+            closeToast();
+          }, 3500);
+          return () => clearTimeout(timer);
+        }
+      }, [toast.show]);
+
+      // Merekam History Back Button di HP (History API)
+      useEffect(() => {
+        window.history.replaceState({ page: 'store' }, '');
+
+        const handlePopState = (event) => {
+          if (event.state && event.state.page) {
+            setView(event.state.page);
+          } else {
+            setView('store');
+          }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+      }, []);
+
+      const openProductDetail = (product) => {
+        setDetailProduct(product);
+        setView('detail');
+        window.history.pushState({ page: 'detail' }, '');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      useEffect(() => {
+        if(typeof google !== 'undefined') {
+          google.script.run.withSuccessHandler((data) => {
+            setProducts(data);
+            setIsInitialLoading(false);
+          }).getProducts();
+        } else {
+          setIsInitialLoading(false);
+        }
+      }, []);
+
+      const filteredProducts = useMemo(() => {
+        return products.filter(product => {
+          return product.name.toLowerCase().includes(searchQuery.toLowerCase());
+        });
+      }, [products, searchQuery]);
+
+      const addToCart = (product, qtyToAdd = 1, showNotification = true) => {
+        setCart(prevCart => {
+          const existing = prevCart.find(item => item.id === product.id);
+          if (existing) {
+            return prevCart.map(item => item.id === product.id ? { ...item, qty: item.qty + qtyToAdd } : item);
+          }
+          return [...prevCart, { ...product, qty: qtyToAdd }];
+        });
+        if (showNotification) {
+          showToast(`🧸 ${product.name} berhasil ditambahkan ke keranjang!`, "success");
+        }
+      };
+
+      const updateQty = (id, delta) => {
+        setCart(prevCart => {
+          return prevCart.map(item => {
+            if (item.id === id) {
+              const newQty = item.qty + delta;
+              return newQty > 0 ? { ...item, qty: newQty } : item;
+            }
+            return item;
+          });
+        });
+      };
+
+      const removeFromCart = (id) => {
+        const item = cart.find(x => x.id === id);
+        setCart(prevCart => prevCart.filter(item => item.id !== id));
+        if (item) {
+          showToast(`Menghapus ${item.name} dari keranjang.`, "success");
+        }
+      };
+
+      const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+
+      return (
+        <div className="min-h-screen bg-gray-50 flex flex-col font-sans relative">
+          <Toast message={toast.message} type={toast.type} onClose={closeToast} />
+          <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} view={view} setView={setView} />
+          
+          <main className="flex-grow pb-24 md:pb-10">
+            {/* TAMPILAN 1: HALAMAN UTAMA KATALOG (STORE) */}
+            {view === 'store' && (
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 font-poppins">
+                    {searchQuery ? `🔍 Hasil Pencarian: "${searchQuery}"` : '🧸 Etalase Mainan Pilihan'}
+                  </h2>
+                </div>
+                
+                {isInitialLoading ? (
+                  <div className="text-center py-20">
+                    <div className="loader"></div>
+                    <p className="text-gray-400 font-medium text-sm mt-2 animate-pulse">Menghubungkan ke server mainan...</p>
+                  </div>
+                ) : filteredProducts.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+                    {filteredProducts.map(product => (
+                      <div key={product.id} className="group bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-gray-100 overflow-hidden hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:border-orange-200 transition-all duration-300 relative flex flex-col h-full">
+                        {product.promo && <div className="absolute top-3 left-3 bg-rose-500 text-white text-[9px] font-bold px-2 py-1 rounded-lg shadow-sm z-10 tracking-wider">PROMO</div>}
+                        
+                        {/* Area Foto Utama */}
+                        <div className="aspect-square bg-gray-50 overflow-hidden relative cursor-pointer" onClick={() => openProductDetail(product)}>
+                          <img src={product.image} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" onError={(e) => { e.target.src = "https://placehold.co/400x400/FFEDD5/F97316?text=Atiya+Toys"; }} />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-300 flex items-center justify-center">
+                            <div className="opacity-0 group-hover:opacity-100 bg-white text-gray-700 text-xs font-bold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1 transition-all transform translate-y-2 group-hover:translate-y-0">🔍 Lihat Detail</div>
+                          </div>
+                        </div>
+
+                        {/* Area Teks & Deskripsi Singkat */}
+                        <div className="p-3.5 flex flex-col flex-grow">
+                          <h3 className="text-xs sm:text-sm text-gray-800 line-clamp-2 min-h-[32px] sm:min-h-[40px] font-medium leading-tight cursor-pointer hover:text-orange-500 transition-colors" onClick={() => openProductDetail(product)}>{product.name}</h3>
+                          <div className="mt-auto pt-2">
+                            <p className="text-orange-500 font-bold text-sm sm:text-base mb-3 font-poppins">Rp {product.price.toLocaleString('id-ID')}</p>
+                            <button onClick={() => addToCart(product, 1)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1 shadow-sm">
+                              + Keranjang
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                    <div className="text-5xl mb-4">🧸</div>
+                    <h3 className="text-lg font-bold text-gray-700">Maaf, mainan belum ditemukan</h3>
+                    <p className="text-sm text-gray-400 mt-1">Coba gunakan kata kunci pencarian yang lain.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAMPILAN 2: DETAIL PRODUK */}
+            {view === 'detail' && detailProduct && (
+              <ProductDetailView 
+                product={detailProduct} 
+                setView={setView} 
+                addToCart={addToCart} 
+                openCart={() => setIsCartOpen(true)} 
+              />
+            )}
+
+            {/* TAMPILAN 3: ADMIN PANEL */}
+            {view === 'admin' && (
+              <AdminPanel 
+                products={products} 
+                setProducts={setProducts} 
+                setView={setView} 
+                isLoadingAction={isLoadingAction} 
+                setIsLoadingAction={setIsLoadingAction} 
+                showToast={showToast}
+              />
+            )}
+          </main>
+          
+          <MobileBottomNav setView={setView} view={view} />
+          
+          {isCartOpen && (
+            <CartModal 
+              cart={cart} 
+              onClose={() => setIsCartOpen(false)} 
+              updateQty={updateQty} 
+              removeFromCart={removeFromCart} 
+              clearCart={() => setCart([])} 
+              showToast={showToast}
+            />
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
